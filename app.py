@@ -1,13 +1,13 @@
 from flask import Flask, request, jsonify
 from recipe_generator  import generation_function
 
-application = Flask(__name__)
+app = Flask(__name__)
 
-@application.route('/')
+@app.route('/')
 def hello():
     return 'Welcome to the Cook It Up API!'
 
-@application.route('/test', methods=["GET"])
+@app.route('/test', methods=["GET"])
 def test():
     ingredients = request.json['ingredients']
 
