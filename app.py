@@ -3,7 +3,6 @@ from recipe_generator  import generation_function
 
 # app
 app = Flask(__name__)
-print("happ created")
 
 @app.route('/')
 def hello():
