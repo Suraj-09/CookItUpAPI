@@ -64,4 +64,4 @@ jobs:
         with:
           app-name: 'CookItUpAPI'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B6DB501F2E0E47EDA5512940BF165023 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3B216B4C8606436A81A2728723B73039 }}
