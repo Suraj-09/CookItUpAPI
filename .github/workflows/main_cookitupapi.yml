@@ -29,9 +29,6 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
-      
-      - name: Install transformers
-        run: pip install transformers
 
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
       - name: Zip artifact for deployment
@@ -67,4 +64,4 @@ jobs:
         with:
           app-name: 'CookItUpAPI'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3B216B4C8606436A81A2728723B73039 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4FB09167DBE142A08549910938112FEC }}
