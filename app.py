@@ -3,7 +3,7 @@ from recipe_generator  import generation_function
 
 # app
 app = Flask(__name__)
-
+print("test")
 @app.route('/')
 def hello():
     return 'Welcome to the Cook It Up API!'
