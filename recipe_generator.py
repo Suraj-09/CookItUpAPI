@@ -6,8 +6,6 @@ tokenizer = AutoTokenizer.from_pretrained("flax-community/t5-recipe-generation")
 model = AutoModelForSeq2SeqLM.from_pretrained("flax-community/t5-recipe-generation")
 generator = pipeline("text2text-generation", model=model, tokenizer=tokenizer)
 
-# print(pipe("serrano peppers, garlic, celery, oregano, canola oil, vinegar, water, kosher salt, salt, black pepper"))
-
 generate_kwargs = {
     "max_length": 512,
     "min_length": 64,
@@ -51,8 +49,6 @@ def post_generator(output_tensors, tokenizer):
 
 
 def generation_function(input):
-    # all_ingredients = "serrano peppers, garlic, celery, oregano, canola oil, vinegar, water, kosher salt, salt, black pepper"
     generated = generator(input, return_tensors=True, return_text=False, **generate_kwargs)
     outputs = post_generator(generated, tokenizer)
-    print(outputs[0])
     return outputs[0]
