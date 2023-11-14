@@ -1,6 +1,8 @@
 # Use a pipeline as a high-level helper
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 import re
+from validation import validate
+from nutrition import request_nutrition
 
 tokenizer = AutoTokenizer.from_pretrained("flax-community/t5-recipe-generation")
 model = AutoModelForSeq2SeqLM.from_pretrained("flax-community/t5-recipe-generation")
@@ -26,7 +28,7 @@ def skip_special_tokens_and_prettify(text, tokenizer):
         re.sub("|".join(tokenizer.all_special_tokens), "", text)
     )
 
-    data = {"title": "", "ingredients": [], "directions": []}
+    data = {"title": "", "ingredients": [], "directions": [], "nutrition": []}
     for section in text.split("\n"):
         section = section.strip()
         section = section.strip()
@@ -34,6 +36,8 @@ def skip_special_tokens_and_prettify(text, tokenizer):
             data["title"] = section.replace("title:", "").strip()
         elif section.startswith("ingredients:"):
             data["ingredients"] = [s.strip() for s in section.replace("ingredients:", "").split('--')]
+            data["ingredients"] = validate(data["ingredients"])
+            data["nutrition"] = request_nutrition(data["title"], data["ingredients"])
         elif section.startswith("directions:"):
             data["directions"] = [s.strip() for s in section.replace("directions:", "").split('--')]
         else:
@@ -44,7 +48,8 @@ def skip_special_tokens_and_prettify(text, tokenizer):
 def post_generator(output_tensors, tokenizer):
     output_tensors = [output_tensors[i]["generated_token_ids"] for i in range(len(output_tensors))]
     texts = tokenizer.batch_decode(output_tensors, skip_special_tokens=False)
-    texts = [skip_special_tokens_and_prettify(text, tokenizer) for text in texts]
+    # texts = [skip_special_tokens_and_prettify(text, tokenizer) for text in texts]
+    texts = [skip_special_tokens_and_prettify(texts[0], tokenizer)]
     return texts
 
 
