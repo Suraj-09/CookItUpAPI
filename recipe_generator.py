@@ -36,7 +36,7 @@ def skip_special_tokens_and_prettify(text, tokenizer):
             data["title"] = section.replace("title:", "").strip()
         elif section.startswith("ingredients:"):
             data["ingredients"] = [s.strip() for s in section.replace("ingredients:", "").split('--')]
-            data["nutrition"] = get_nutrition(data["ingredients"])
+            data["nutrition"] = get_nutrition(data["ingredients"], True)
         elif section.startswith("directions:"):
             data["directions"] = [s.strip() for s in section.replace("directions:", "").split('--')]
         else:

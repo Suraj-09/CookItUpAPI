@@ -55,6 +55,7 @@ def insert_many_ingredients(ingredient_nutrtion_list):
     collection = db["nutritional-information"]
 
     for ingredient in ingredient_nutrtion_list:
+        print(ingredient)
         measure = ingredient['measures'][0]
 
         existing_document = collection.find_one({'food_name': ingredient['food_name']})

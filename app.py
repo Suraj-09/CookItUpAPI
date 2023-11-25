@@ -8,11 +8,11 @@ class Ingredients(BaseModel):
     ingredients: str
 
 @app.get('/')
-def hello():
+def root():
     return 'Welcome to the Cook It Up API!'
 
 @app.post('/generate_recipe')
-def test(ingredients: Ingredients):
+def generate_recipe(ingredients: Ingredients):
     if not ingredients.ingredients:
         raise HTTPException(status_code=400, detail="Missing 'ingredients' parameter in the POST request.")
 

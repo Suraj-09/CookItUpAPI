@@ -169,12 +169,12 @@ def parse_ingredients(ingredient_list):
     #         print(ing_obj)
 
 
-    print("-------------------------------------------------------------------------------------------") 
-    print(f"num_parsed: {num_parsed}")
-    print(f"num_not_parsed: {num_total-num_parsed}")
-    print(f"num_total: {num_total}")
-    print(f"num_one_name: {num_one_name}")
-    print("-------------------------------------------------------------------------------------------") 
+    # print("-------------------------------------------------------------------------------------------") 
+    # print(f"num_parsed: {num_parsed}")
+    # print(f"num_not_parsed: {num_total-num_parsed}")
+    # print(f"num_total: {num_total}")
+    # print(f"num_one_name: {num_one_name}")
+    # print("-------------------------------------------------------------------------------------------") 
     return ingredient_object_list
 
 def parse_nutrition_doc(qty, measure, document):
@@ -256,12 +256,13 @@ def parse_recipe_data(recipe_data):
                 ingredient_nutrition_list.append(ingredient_dict)
 
 
-    db.insert_many_ingredients(ingredient_nutrition_list_for_db)
+    # db.insert_many_ingredients(ingredient_nutrition_list_for_db)
 
     return ingredient_nutrition_list
 
 
 # if __name__ == "__main__":
+    
 
 #     # ingredient_list = [
 #     #     '1 c. sugar', '1 12 oz. jar crunchy jif peanut butter', '6 qt. cornflakes',
