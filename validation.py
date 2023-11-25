@@ -2,18 +2,32 @@ from spellchecker import SpellChecker
 from fractions import Fraction
 
 measurements_set = {
-    "tsp", "tsp.", "tbsp", "tbsp.", "c", "c.", "lb", "lb.",
+    "tsp", "tsp.", "tbsp", "tbsp.", "c", "c.", "lb", "lb.", "lbs"
     "oz", "oz.", "g", "g.", "kg", "kg.", "ml", "ml.", "l", "l.",
     "pt", "pt.", "qt", "qt.", "gal", "gal.", "pinch", "pinches",
     "dash", "dashes", "smidgen", "smidgens", "drop", "drops",
     "piece", "pieces", "slice", "slices", "strip", "strips",
     "can", "cans", "bunch", "bunches", "sprig", "sprigs",
-    "clove", "cloves"
+    "clove", "cloves", "worcestershire", "pkg.", "pkg", "jif"
 }
+
+def spell_check_ingredient(ingredient):
+    spell = SpellChecker()
+    correct_spelling = ingredient
+
+    if not spell.known([ingredient]):
+        correct_spelling = spell.correction(ingredient)
+        if correct_spelling is None:
+            correct_spelling = ingredient
+
+        print(f"{ingredient} was corrected to {correct_spelling}")
+        return correct_spelling
+
+    return correct_spelling
 
 def validate(ingredient_list):
     spell = SpellChecker()
-    print(ingredient_list)
+    # print(ingredient_list)
 
     for i in range(len(ingredient_list)):
         # print(f"check: {ingredient_list[i]}")
@@ -36,6 +50,8 @@ def validate(ingredient_list):
                     
 
                     correct_spelling = spell.correction(ing)
+                    if correct_spelling is None:
+                        correct_spelling = ing
 
                     print(f"{ing} was corrected to {correct_spelling}")
 
@@ -44,7 +60,7 @@ def validate(ingredient_list):
 
                     # ingredient_list[i] = correct_spelling
 
-    print(ingredient_list)
+    # print(ingredient_list)
     return ingredient_list
 
 def is_numeric(str):

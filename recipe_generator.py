@@ -2,7 +2,7 @@
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 import re
 from validation import validate
-from nutrition import request_nutrition
+from nutrition import request_nutrition_from_api, get_nutrition
 
 tokenizer = AutoTokenizer.from_pretrained("flax-community/t5-recipe-generation")
 model = AutoModelForSeq2SeqLM.from_pretrained("flax-community/t5-recipe-generation")
@@ -36,8 +36,7 @@ def skip_special_tokens_and_prettify(text, tokenizer):
             data["title"] = section.replace("title:", "").strip()
         elif section.startswith("ingredients:"):
             data["ingredients"] = [s.strip() for s in section.replace("ingredients:", "").split('--')]
-            data["ingredients"] = validate(data["ingredients"])
-            data["nutrition"] = request_nutrition(data["title"], data["ingredients"])
+            data["nutrition"] = get_nutrition(data["ingredients"])
         elif section.startswith("directions:"):
             data["directions"] = [s.strip() for s in section.replace("directions:", "").split('--')]
         else:
@@ -53,7 +52,9 @@ def post_generator(output_tensors, tokenizer):
     return texts
 
 
-def generation_function(input):
+def recipe_generation_function(input):
+    generate_kwargs["num_return_sequences"] = 5
     generated = generator(input, return_tensors=True, return_text=False, **generate_kwargs)
     outputs = post_generator(generated, tokenizer)
+    print(outputs)
     return outputs[0]
