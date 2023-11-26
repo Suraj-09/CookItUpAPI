@@ -1,5 +1,7 @@
 class Ingredient:
     def __init__(self):
+
+        #ingredients initialisation 
         self.quantity = 0
         self.measure = ""
         self.name = ""
@@ -12,13 +14,13 @@ class Ingredient:
             'Carbohydrate': 0,
             'Protein': 0
         }
+
+        # set the parameters to default
         self.parsed = False
         self.ignore = False
         self.current = []
 
-    # def __str__(self):
-    #     return f"qty = {self.quantity:.2f}; unit = {self.unit}; name = {self.name}; full = {self.full}; full_name = {self.full_name}; split_name = {self.split_name}; nutrition = {self.nutrition}"
-
+    # ingredients output format
     def __str__(self):
         return (
             f"Full: {self.full}".ljust(100) +
@@ -27,7 +29,6 @@ class Ingredient:
             f"Quantity: {self.quantity:.2f}".ljust(20) +
             f"Measure: {self.measure}".ljust(30) +
             f"Name: {self.name}".ljust(30) +            
-            # f"\nFull Name: {self.full_name}".ljust(40) +
             f"\nSplit Name: {self.split_name}".ljust(50) +
             f"Nutrition: {self.nutrition}".ljust(25)
         )
