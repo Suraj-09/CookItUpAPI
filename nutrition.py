@@ -1,12 +1,10 @@
 import requests
 from dotenv import load_dotenv
 import os
-import json
 import mongo_helper
 import parse
 
-
-def get_nutrition(ingredient_list, use_db = True):
+def get_nutrition(ingredient_list, use_db):
     ing_obj_list = parse.parse_ingredients(ingredient_list)
     if use_db:
         result = mongo_helper.get_ingredient_nutrition(ing_obj_list)
@@ -16,19 +14,11 @@ def get_nutrition(ingredient_list, use_db = True):
         ingredients_with_nutrition = []
         ingredients_to_search = ing_obj_list
 
-    print(len(ingredients_with_nutrition))
-    print(len(ingredients_to_search))
-
     ingredients_for_db = []
     for ing_obj in ingredients_to_search:
         ing_nutrition = request_nutrition_from_api(ing_obj.full)
         if ing_nutrition is not None and ing_nutrition != []:
-            # print(ing_obj)
-
-            print(ing_nutrition)
             ing_nutrition = ing_nutrition[0]
-
-
 
             measure = ing_nutrition['measures'][0]
             ing_obj.quantity = ing_nutrition['quantity']
@@ -36,28 +26,17 @@ def get_nutrition(ingredient_list, use_db = True):
             ing_obj.nutrition = parse.parse_nutrition_doc(ing_nutrition['quantity'], measure, ing_nutrition)
             ingredients_with_nutrition.append(ing_obj)
 
-
             ing_nutrition.pop("quantity")
             if (ing_obj.quantity != 0 and ing_obj.measure != ""):
                 if (ing_obj.name != ing_nutrition['food_name']):
-                    # print("-----")
-                    # print(f"ing_obj.name: {ing_obj.name}")
-                    # print(f"ing_nutrition['food_name']: {ing_nutrition['food_name']}")
-                    
+                  
                     ing_nutrition_other_name = dict(ing_nutrition)
                     ing_nutrition_other_name['food_name'] = ing_obj.name
-                    # print(f"ing_nutrition_other_name: {ing_nutrition_other_name}")
-                    # print(f"ing_nutrition: {ing_nutrition}")
-                    # print("-----")
                     
                     ingredients_for_db.append(ing_nutrition_other_name)
 
             
             ingredients_for_db.append(ing_nutrition)
-
-    print("-----")
-    print(ingredients_for_db)
-    print("-----")
 
     mongo_helper.insert_many_ingredients(ingredients_for_db)
 
@@ -88,9 +67,6 @@ def request_nutrition_from_api(ingredient):
     # API endpoint
     # api_url = 'https://api.edamam.com/api/nutrition-details'
     api_url = 'https://api.edamam.com/api/nutrition-data'
-
-    # Example body for the POST request
-
 
     # Set up headers with your app_id and app_key
     headers = {

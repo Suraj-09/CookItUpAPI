@@ -116,6 +116,7 @@ def parse_ingredients(ingredient_list):
                         ingredient_object.quantity = (ingredient_object.quantity + quantity) / 2
                         current_split = [s for s in current_split if s != section]
                         current_split = [s for s in current_split if s != "to"]
+                    # handle ex: 2 10 ounce package of food    
                     elif (i > 0 and (is_whole_num(ingredient_split[i-1])) and (is_whole_num(ingredient_split[i]))):
                         ingredient_object.quantity = (ingredient_object.quantity * quantity)
                         current_split = [s for s in current_split if s != section]
@@ -123,16 +124,14 @@ def parse_ingredients(ingredient_list):
                         ingredient_object.quantity = ingredient_object.quantity + quantity
                         current_split = [s for s in current_split if s != section]
                     
-
-
                 if section in measurements_set:
                     if ingredient_object.measure == "":
                         ingredient_object.measure = measurements_dict[section]
                     current_split = [s for s in current_split if s != section]
+
+                
                 if section in descriptor_set:
                     current_split = [s for s in current_split if s != section]
-
-                # if in 
 
 
             ingredient_object.name = ' '.join(current_split)
@@ -151,30 +150,6 @@ def parse_ingredients(ingredient_list):
         ingredient_object_list.append(ingredient_object)
         
 
-    # print("------------------------------") 
-    # for i, ing_obj in enumerate(ingredient_object_list):
-    #     if (ing_obj.parsed):
-    #         print("------------------------------")
-    #         print(ing_obj)
-
-
-    # print("-------------------------------------------------------------------------------------------") 
-    # print("-------------------------------------------------------------------------------------------") 
-    # print("-------------------------------------------------------------------------------------------") 
-    # print("-------------------------------------------------------------------------------------------") 
-    # print("-------------------------------------------------------------------------------------------") 
-    # for i, ing_obj in enumerate(ingredient_object_list):
-    #     if (not ing_obj.parsed):
-    #         print("------------------------------")
-    #         print(ing_obj)
-
-
-    # print("-------------------------------------------------------------------------------------------") 
-    # print(f"num_parsed: {num_parsed}")
-    # print(f"num_not_parsed: {num_total-num_parsed}")
-    # print(f"num_total: {num_total}")
-    # print(f"num_one_name: {num_one_name}")
-    # print("-------------------------------------------------------------------------------------------") 
     return ingredient_object_list
 
 def parse_nutrition_doc(qty, measure, document):

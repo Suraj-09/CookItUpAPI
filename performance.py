@@ -48,8 +48,6 @@ def perform_requests():
 
         results.append(result)
 
-        
-
     return results
 
 # Main function
@@ -61,7 +59,7 @@ def main():
     df = pd.DataFrame(results)
 
     # Save the DataFrame to an Excel file
-    df.to_excel("api_results_6.xlsx", index=False)
+    df.to_excel("api_results_8.xlsx", index=False)
     print("Results saved to api_results.xlsx")
 
 if __name__ == "__main__":
