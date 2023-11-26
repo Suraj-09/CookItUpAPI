@@ -4,42 +4,64 @@ import os
 import mongo_helper
 import parse
 
+# get nutritional information based on a list of ingredients requested by the user (can decode to use database or not)
 def get_nutrition(ingredient_list, use_db):
+
+    # Parse ingredients to a list 
     ing_obj_list = parse.parse_ingredients(ingredient_list)
+    
+    # check if the ingredients are within the database, if so retrieve the ingredients nutritional information
     if use_db:
         result = mongo_helper.get_ingredient_nutrition(ing_obj_list)
         ingredients_with_nutrition = result[0]
         ingredients_to_search = result[1]
+    
+    # otherwise, API call with Edaman to retrive the nutritional information for all ingredients
     else:
         ingredients_with_nutrition = []
         ingredients_to_search = ing_obj_list
 
+    # adds ingredients to the database if not present and request nutritional information from Edaman API for all ingredients 
     ingredients_for_db = []
     for ing_obj in ingredients_to_search:
         ing_nutrition = request_nutrition_from_api(ing_obj.full)
+
+        # check if nutritional information is valid and under correct format (without absence of value or empty list)
         if ing_nutrition is not None and ing_nutrition != []:
             ing_nutrition = ing_nutrition[0]
 
+            # retrieve nutrition information based on the measurement and quantity proportions 
             measure = ing_nutrition['measures'][0]
             ing_obj.quantity = ing_nutrition['quantity']
             ing_obj.measure = measure
-            ing_obj.nutrition = parse.parse_nutrition_doc(ing_nutrition['quantity'], measure, ing_nutrition)
-            ingredients_with_nutrition.append(ing_obj)
 
+            # parse the nutrional information 
+            ing_obj.nutrition = parse.parse_nutrition_doc(ing_nutrition['quantity'], measure, ing_nutrition)    
+            
+            # append the ingredients with nutritional information
+            ingredients_with_nutrition.append(ing_obj)                                                          
+
+            # retrieve quantity information and check if it is valid (not 0 and not empty) 
             ing_nutrition.pop("quantity")
             if (ing_obj.quantity != 0 and ing_obj.measure != ""):
+
+                # checks if the name of the ingredients differs from the food name of the nutritional information
                 if (ing_obj.name != ing_nutrition['food_name']):
                   
+                    # if so, updates the nutrional information food name with the name from ingredients list
                     ing_nutrition_other_name = dict(ing_nutrition)
                     ing_nutrition_other_name['food_name'] = ing_obj.name
                     
+                    # append new nutritional information name for the datase
                     ingredients_for_db.append(ing_nutrition_other_name)
 
-            
+            # append the nutrional information to the database
             ingredients_for_db.append(ing_nutrition)
 
+    # inserts all the missing ingredients from the database
     mongo_helper.insert_many_ingredients(ingredients_for_db)
 
+    # format the nutrition information and sets them to default value
     nutrition = {
         'Calories': 0,
         'Fat': 0,
@@ -47,6 +69,7 @@ def get_nutrition(ingredient_list, use_db):
         'Protein': 0
     }
 
+    # for all ingredients containing nutrional information, show their values for different parameters and return those values 
     for ing_obj in ingredients_with_nutrition:
         nutrition['Calories'] += ing_obj.nutrition['Calories']
         nutrition['Fat'] += ing_obj.nutrition['Fat']
