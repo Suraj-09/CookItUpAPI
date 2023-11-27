@@ -2,7 +2,6 @@ import pymongo
 import os
 from dotenv import load_dotenv
 import parse
-import hash_helper
 import helper_functions
 from bson import ObjectId
 
