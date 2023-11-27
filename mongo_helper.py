@@ -8,32 +8,53 @@ from bson import ObjectId
 # Load environment variables from .env file
 load_dotenv()
 
+# setup mongoDB connection 
 atlas_uri = os.getenv('ATLAS_URI')
 
 client = pymongo.MongoClient(atlas_uri)
 
+# assign the nutritional database as variable
 db = client["NutritionDatabase"]
 
+# seperate the database into categories depending on the information attributes
 collection_nutrition = db["nutritional-information"]
 collection_recipe = db["recipe"]
 
-
+# fetch nutritional information from the ingredients list
 def get_ingredient_nutrition(ingredient_list):
+    
+    #initialise empty list
     ingredients_to_search = []
-
     ingredients_with_nutrition = []
+    
+    # for all ingredients, search in the infredients list 
     for ing_obj in ingredient_list:
 
+        # checks for the flag if the object is ignored or not
         if (not ing_obj.ignore):
+
+            # request for the data from MongoDB of the nutritional information for an ingredient
             query = {"$and": [{"food_name": ing_obj.name}, {str(ing_obj.measure): {"$exists": True}}]}
+           
+           # check if the entry is found within the collection nutritional information
             existing_document = collection_nutrition.find_one(query)
+
+            # check if the entry is found (ingredient), if so parse the nutritional information parameters and append it to the list of ingredients with nutrition for fast retrieval next call
             if existing_document is not None:
                 ing_obj.nutrition = parse.parse_nutrition_doc(ing_obj.quantity, ing_obj.measure, existing_document)
                 ingredients_with_nutrition.append(ing_obj)
+            
+            # otherwise, initally calls helper functions to remove unwanted entry type
             else:
+
+                # performs helper function spell check for the ingredients -> attemps to match to an existing word 
                 ing_obj.name = helper_functions.spell_check_ingredient(ing_obj.name)
+                
+                # after spellcheck, restart the query and searching
                 query = {"$and": [{"food_name": ing_obj.name}, {str(ing_obj.measure): {"$exists": True}}]}
                 existing_document = collection_nutrition.find_one(query)
+                
+                # check the entry as before and append depending if the ningredient is found
                 if existing_document is not None:
                     ing_obj.nutrition = parse.parse_nutrition_doc(ing_obj.quantity, ing_obj.measure, existing_document)
                     ingredients_with_nutrition.append(ing_obj)
