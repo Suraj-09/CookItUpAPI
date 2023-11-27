@@ -92,34 +92,45 @@ def insert_many_ingredients(ingredient_nutrtion_list):
                 )
             print(f"{ingredient['food_name']} was updated")
 
-# function to insert a recipe to the database
+# insert a recipe or update one to the database
 def insert_recipe(input_string, recipe):
+    
+    # initialise default
     recipe_id = None
 
+    # call helper function for each parameter as a hash object
     input_string = helper_functions.sort_ingredients(input_string)
     hashed_input_string = helper_functions.hash_string(input_string)
     hashed_recipe = helper_functions.hash_json(recipe)
 
+    # each recipe have its own hash id and is formatted to make sure it is unique within the collection
     recipe_document = {
         "hashed_ingredients": hashed_input_string,
         "hashed_recipe": hashed_recipe,
         "recipe": recipe
     }
 
+    # flag to check if an existing hash ID exist within the collection of recipe
     existing_document = collection_recipe.find_one({'hashed_recipe': hashed_recipe})
+    
+    # if a recipe does not exist, insert the recipe to the database
     if existing_document is None:
         result = collection_recipe.insert_one(recipe_document)
         print(f"{recipe_document['recipe']['title']} was added to database")
         recipe_id = result.inserted_id
+    
+    # otherwise, retrieve the id to return the recipe to the user and for subsequent manipulation
     else:
         recipe_id = existing_document['_id']
 
     return recipe_id
 
+# retrieve a recipe
 def get_recipe(recipe_id):
     # Convert recipe_id to ObjectId
     try:
         recipe_id = ObjectId(recipe_id)
+    
     except Exception as e:
         # Handle the exception if recipe_id is not a valid ObjectId
         print(f"Invalid recipe_id: {e}")
