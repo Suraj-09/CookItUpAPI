@@ -98,19 +98,19 @@ def insert_recipe(input_string, recipe):
     # initialise default
     recipe_id = None
 
-    # call helper function for each parameter as a hash object
+    # call helper function for each parameter as a hash string
     input_string = helper_functions.sort_ingredients(input_string)
     hashed_input_string = helper_functions.hash_string(input_string)
     hashed_recipe = helper_functions.hash_json(recipe)
 
-    # each recipe have its own hash id and is formatted to make sure it is unique within the collection
+    # each recipe have its own hash string and is formatted to make sure it is unique within the collection
     recipe_document = {
         "hashed_ingredients": hashed_input_string,
         "hashed_recipe": hashed_recipe,
         "recipe": recipe
     }
 
-    # flag to check if an existing hash ID exist within the collection of recipe
+    # flag to check if an existing hash string exist within the collection of recipe
     existing_document = collection_recipe.find_one({'hashed_recipe': hashed_recipe})
     
     # if a recipe does not exist, insert the recipe to the database
