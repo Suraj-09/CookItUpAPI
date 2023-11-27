@@ -33,7 +33,7 @@ def get_ingredient_nutrition(ingredient_list):
         # checks for the flag if the object is ignored or not
         if (not ing_obj.ignore):
 
-            # request for the data from MongoDB of the nutritional information for an ingredient
+            # request for the data of the nutritional information for an ingredient
             query = {"$and": [{"food_name": ing_obj.name}, {str(ing_obj.measure): {"$exists": True}}]}
            
            # check if the entry is found within the collection nutritional information
@@ -50,7 +50,7 @@ def get_ingredient_nutrition(ingredient_list):
                 # performs helper function spell check for the ingredients -> attemps to match to an existing word 
                 ing_obj.name = helper_functions.spell_check_ingredient(ing_obj.name)
                 
-                # after spellcheck, restart the query and searching
+                # after spellcheck, restart the query and searching within the database collection
                 query = {"$and": [{"food_name": ing_obj.name}, {str(ing_obj.measure): {"$exists": True}}]}
                 existing_document = collection_nutrition.find_one(query)
                 
@@ -63,18 +63,29 @@ def get_ingredient_nutrition(ingredient_list):
 
     return [ingredients_with_nutrition, ingredients_to_search]
 
+# function to insert many ingredients to the ingredients nutrition database
 def insert_many_ingredients(ingredient_nutrtion_list):
 
+    # for all ingredients within the nutritional list
     for ingredient in ingredient_nutrtion_list:
         measure = ingredient['measures'][0]
 
+        # find the ingredient name within the database collection of nutrition information
         existing_document = collection_nutrition.find_one({'food_name': ingredient['food_name']})
-    
+
+        # if not found within the database
         if existing_document is None:
+
+            # insert the ingredient to the database 
             collection_nutrition.insert_one(ingredient)
             print(f"{ingredient['food_name']} was added to database")
+        
         else:
+            
+        # check for the measurement of the ingredient and if not found:
             if measure not in existing_document['measures']:
+                
+                # update the collection nutrition with id (from hash), measure  
                 collection_nutrition.update_one(
                     {'_id': existing_document['_id']},
                     {
@@ -84,6 +95,7 @@ def insert_many_ingredients(ingredient_nutrtion_list):
                 )
             print(f"{ingredient['food_name']} was updated")
 
+# function to insert a recipe to the database
 def insert_recipe(input_string, recipe):
     recipe_id = None
 
