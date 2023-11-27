@@ -16,7 +16,7 @@ def get_nutrition(ingredient_list, use_db):
         ingredients_with_nutrition = result[0]
         ingredients_to_search = result[1]
     
-    # otherwise, API call with Edaman to retrive the nutritional information for all ingredients
+    # otherwise, API call with Edamam to retrive the nutritional information for all ingredients
     else:
         ingredients_with_nutrition = []
         ingredients_to_search = ing_obj_list
