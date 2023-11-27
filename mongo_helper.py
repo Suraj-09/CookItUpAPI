@@ -27,7 +27,7 @@ def get_ingredient_nutrition(ingredient_list):
     ingredients_to_search = []
     ingredients_with_nutrition = []
     
-    # for all ingredients, search in the infredients list 
+    # for all ingredients, search in the ingredients list 
     for ing_obj in ingredient_list:
 
         # checks for the flag if the object is ignored or not
@@ -36,7 +36,7 @@ def get_ingredient_nutrition(ingredient_list):
             # request for the data of the nutritional information for an ingredient
             query = {"$and": [{"food_name": ing_obj.name}, {str(ing_obj.measure): {"$exists": True}}]}
            
-           # check if the entry is found within the collection nutritional information
+           # return flag if the entry is found within the collection nutritional information
             existing_document = collection_nutrition.find_one(query)
 
             # check if the entry is found (ingredient), if so parse the nutritional information parameters and append it to the list of ingredients with nutrition for fast retrieval next call
@@ -46,7 +46,6 @@ def get_ingredient_nutrition(ingredient_list):
             
             # otherwise, initally calls helper functions to remove unwanted entry type
             else:
-
                 # performs helper function spell check for the ingredients -> attemps to match to an existing word 
                 ing_obj.name = helper_functions.spell_check_ingredient(ing_obj.name)
                 
@@ -54,7 +53,7 @@ def get_ingredient_nutrition(ingredient_list):
                 query = {"$and": [{"food_name": ing_obj.name}, {str(ing_obj.measure): {"$exists": True}}]}
                 existing_document = collection_nutrition.find_one(query)
                 
-                # check the entry as before and append depending if the ningredient is found
+                # check the entry as before and append depending if the ingredient is found and retrieve information
                 if existing_document is not None:
                     ing_obj.nutrition = parse.parse_nutrition_doc(ing_obj.quantity, ing_obj.measure, existing_document)
                     ingredients_with_nutrition.append(ing_obj)
@@ -73,19 +72,17 @@ def insert_many_ingredients(ingredient_nutrtion_list):
         # find the ingredient name within the database collection of nutrition information
         existing_document = collection_nutrition.find_one({'food_name': ingredient['food_name']})
 
-        # if not found within the database
+        # if not found within the database (empty)
         if existing_document is None:
-
             # insert the ingredient to the database 
             collection_nutrition.insert_one(ingredient)
             print(f"{ingredient['food_name']} was added to database")
         
         else:
-            
         # check for the measurement of the ingredient and if not found:
             if measure not in existing_document['measures']:
                 
-                # update the collection nutrition with id (from hash), measure  
+                # update the collection nutrition with id (from hash), measure 
                 collection_nutrition.update_one(
                     {'_id': existing_document['_id']},
                     {
