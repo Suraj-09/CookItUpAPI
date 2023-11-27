@@ -1,0 +1,14 @@
+sequenceDiagram
+    actor dev as Developer
+    participant api as CookItUpAPI    
+    participant mongo_helper as Mongo Helper
+
+    dev->>api: HTTP POST /get_recipe <br> with recipe_id
+    api->>mongo_helper: get_recipe(recipe_id)
+    alt Recipe ID Exists
+        mongo_helper-->>api: return recipe
+        api-->>dev: return response with recipe
+    else Invalid Recipe ID
+        mongo_helper-->>api: return None
+        api-->>dev: return recipe not found error
+    end
