@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 import mongo_helper
 import parse
+import config
 
 # get nutritional information based on a list of ingredients requested by the user (can decode to use database or not)
 def get_nutrition(ingredient_list, use_db):
@@ -84,8 +85,10 @@ def request_nutrition_from_api(ingredient):
     load_dotenv()
 
     # Your dotenv file should have these entries: APP_ID=your_app_id_here, APP_KEY=your_app_key_here
-    app_id = os.getenv('EDAMAM_APP_ID')
-    app_key = os.getenv('EDAMAM_APP_KEY')
+    # app_id = os.getenv('EDAMAM_APP_ID')
+    # app_key = os.getenv('EDAMAM_APP_KEY')
+    app_id = config.EDAMAM_APP_ID
+    app_key = config.EDAMAM_APP_KEY
 
     # API endpoint
     # api_url = 'https://api.edamam.com/api/nutrition-details'
