@@ -1,8 +1,7 @@
 from fractions import Fraction
 from ingredient import Ingredient
-import mongo_helper as db
-import nutrition
 
+# ignore these ingredients as they are quantifiable or their string contains no measurement
 ingredients_to_ignore = {
     "pepper to taste",
     "dash of pepper",
@@ -13,6 +12,7 @@ ingredients_to_ignore = {
     "salt"
     }
 
+# define the measurements alternatives as the recipe generator uses many forms to show the quantities 
 measurements_set = {
     "tsp", "tsp.", "teaspoon", "teaspoons",
     "tbsp", "tbsp.", "tablespoon", "tablespoons",
@@ -43,6 +43,7 @@ measurements_set = {
     "tdsp"
 }
 
+# associate ingredients variation sets to a single format 
 measurements_dict = {
     "tsp": "teaspoon", "tsp.": "teaspoon",
     "teaspoons": "teaspoon", "teaspoon": "teaspoon",
@@ -80,35 +81,41 @@ measurements_dict = {
     "whole":"whole","small":"whole", "medium":"whole", "large":"whole"
 }
 
+# these word will be ignored as it creates confusion when generating macronutrients infos
 descriptor_set = {
     "frozen", "chopped", "thawed", "and", "drained", "shredded", "dry", "melted",
     "all", "purpose", "fresh", "halved", 'baby','hulled','grated','part','skim', 'cooked',
     'undrained', "diced", "minced", 'rinsed','trimmed', 'toasted','sliced','crumbled', 'of','pitted','dried',
     'cubed', 'julienned', 'cut', 'into', 'wedges', 'torn', 'into', 'bite', 'size', 'thinly', 'for', 'frying','or', 'softened',
     'peeled', 'seeded','finely', 'deveined', 'candiced', 'cored','sweet','sweetened', 'condensed'
-
 }
 
-
+# parse the ingredients to an usable format for our service
 def parse_ingredients(ingredient_list):
     num_parsed = 0
     num_total = len(ingredient_list)
     num_one_name = 0
-
+    
     ingredient_object_list = []
+    
+    # for all the ingredients within the list of ingredients
     for ingredient in ingredient_list:
         ingredient_object = Ingredient()
         ingredient_object.full = ingredient
         ingredient = ingredient.replace(",", "")
+        
+        # checks if the ingredients are within the ignore category (ex: pepper to taste)
         if (ingredient not in ingredients_to_ignore):
             ing_str = ingredient
             ingredient_split = ingredient.split()
             current_split = ingredient_split
-            # print(ingredient_split)
 
+            # iterate through a string of ingredient (1 cup of flour) 
             for i, section in enumerate(ingredient_split):
                 
+                # parse quantity
                 quantity = parse_quantity(section)
+                
                 if quantity is not None:
 
                     # handle quantities like: 1 to 2 cups
@@ -116,6 +123,7 @@ def parse_ingredients(ingredient_list):
                         ingredient_object.quantity = (ingredient_object.quantity + quantity) / 2
                         current_split = [s for s in current_split if s != section]
                         current_split = [s for s in current_split if s != "to"]
+                    
                     # handle ex: 2 10 ounce package of food    
                     elif (i > 0 and (is_whole_num(ingredient_split[i-1])) and (is_whole_num(ingredient_split[i]))):
                         ingredient_object.quantity = (ingredient_object.quantity * quantity)
@@ -124,12 +132,13 @@ def parse_ingredients(ingredient_list):
                         ingredient_object.quantity = ingredient_object.quantity + quantity
                         current_split = [s for s in current_split if s != section]
                     
+               # checks if its within the measurement set
                 if section in measurements_set:
                     if ingredient_object.measure == "":
                         ingredient_object.measure = measurements_dict[section]
                     current_split = [s for s in current_split if s != section]
 
-                
+                # checks if its a descriptive word and if so ignore it
                 if section in descriptor_set:
                     current_split = [s for s in current_split if s != section]
 
