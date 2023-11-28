@@ -193,11 +193,7 @@ def parse_quantity(quantity_str):
 
 def parse_recipe_data(recipe_data):
     # Access specific information
-    recipe_name = recipe_data.get('uri', '')
-    recipe_yield = recipe_data.get('yield', 0)
-    recipe_calories = recipe_data.get('calories', 0)
     ingredients = recipe_data.get('ingredients', [])
-    total_nutrients = recipe_data.get('totalNutrients', {})
 
     ingredient_nutrition_list = []
     ingredient_nutrition_list_for_db = []
