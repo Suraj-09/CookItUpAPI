@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from recipe_generator import recipe_generation_function
+from recipe_generator import recipe_generation_function, recipe_generation_function_with_time
 import mongo_helper
 
 # FastAPI Instance Creation
@@ -55,21 +55,26 @@ def get_recipe(recipe_id: str):
 
 # route for performance analysis for a recipe generation
 @app.post('/performance/generate_recipe')
-def generate_recipe(ingredients: Ingredients, use_db: bool):
+def generate_recipe(payload: dict):
+
+    ingredients_str = payload.get("ingredients", "")
+    use_db = payload.get("use_db", True)
+
+    ingredients = Ingredients(ingredients=ingredients_str)
     
     # check if ingredients is within the POST request
     if not ingredients.ingredients:
         raise HTTPException(status_code=400, detail="Missing 'ingredients' parameter in the POST request.")
     
     # check if use_db is within the POST request
-    if not use_db:
+    if use_db is None:
         raise HTTPException(status_code=400, detail="Missing 'use_db' parameter in the POST request.")
 
     # generate the recipe
-    recipe = recipe_generation_function(ingredients.ingredients, use_db)
+    response = recipe_generation_function_with_time(ingredients.ingredients, use_db)
 
     # exception handling for failed recipe generation
-    if not recipe:
+    if not response["recipe"]:
         raise HTTPException(status_code=422, detail="Failed to generate recipe")
 
-    return {"recipe": recipe}
+    return response

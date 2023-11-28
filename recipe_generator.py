@@ -2,6 +2,7 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 import re
 from nutrition import get_nutrition
 import mongo_helper
+import time
 
 tokenizer = AutoTokenizer.from_pretrained("flax-community/t5-recipe-generation")
 model = AutoModelForSeq2SeqLM.from_pretrained("flax-community/t5-recipe-generation")
@@ -49,7 +50,6 @@ def post_generator(output_tensors, tokenizer, use_db):
     texts = [skip_special_tokens_and_prettify(texts[0], tokenizer, use_db)]
     return texts
 
-
 def recipe_generation_function(input_ingredients, use_db = True):
     generated = generator(input_ingredients, return_tensors=True, return_text=False, **generate_kwargs)
     outputs = post_generator(generated, tokenizer, use_db)
@@ -60,3 +60,18 @@ def recipe_generation_function(input_ingredients, use_db = True):
     output['recipe_id'] = str(recipe_id)
 
     return output
+
+def recipe_generation_function_with_time(input_ingredients, use_db = True):
+    start_time = time.time()
+    generated = generator(input_ingredients, return_tensors=True, return_text=False, **generate_kwargs)
+    end_time = time.time()
+    recipe_generation_time = end_time - start_time
+    outputs = post_generator(generated, tokenizer, use_db)
+
+    output = outputs[0]
+
+    recipe_id = mongo_helper.insert_recipe(input_ingredients, output)
+    output['recipe_id'] = str(recipe_id)
+    response = {"recipe_generation_time":recipe_generation_time, "recipe":output}
+
+    return response
