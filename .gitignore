@@ -28,6 +28,8 @@ MANIFEST
 
 .python-version
 .github
+old_files/
+performance/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
