@@ -15,3 +15,4 @@ The technologies used for this service are:
 - Cloud Service: Microsoft Azure
 - External API: Edamam Nutritional Analysis API
 
+Performance Analysis is also done as an extra feature. 
