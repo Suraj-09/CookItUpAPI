@@ -1,7 +1,7 @@
 sequenceDiagram
     actor dev as Developer
-    participant api as CookItUpAPI    
-    participant mongo_helper as Mongo Helper
+    participant api as CookItUpAPI (.py)
+    participant mongo_helper as Mongo Helper (.py)
 
     dev->>api: HTTP POST /get_recipe <br> with recipe_id
     api->>mongo_helper: get_recipe(recipe_id)
