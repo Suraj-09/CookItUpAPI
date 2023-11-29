@@ -14,7 +14,3 @@ edamam_key = "EDAMAM-APP-KEY"
 ATLAS_URI = client.get_secret(mongo_uri).value
 EDAMAM_APP_ID = client.get_secret(edamam_id).value
 EDAMAM_APP_KEY = client.get_secret(edamam_key).value
-
-# print(ATLAS_URI)
-# print(EDAMAM_APP_ID)
-# print(EDAMAM_APP_KEY)

@@ -1,18 +1,11 @@
 import pymongo
-import os
-from dotenv import load_dotenv
 import parse
 import helper_functions
 from bson import ObjectId
 import config
 
-# Load environment variables from .env file
-load_dotenv()
-
 # setup mongoDB connection 
-# atlas_uri = os.getenv('ATLAS_URI')
 atlas_uri = config.ATLAS_URI
-
 client = pymongo.MongoClient(atlas_uri)
 
 # assign the nutritional database as variable
